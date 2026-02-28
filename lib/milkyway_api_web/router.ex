@@ -5,8 +5,34 @@ defmodule MilkywayApiWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :api_auth do
+    plug MilkywayApiWeb.UserAuth, :fetch_current_user
+  end
+
   scope "/api", MilkywayApiWeb do
     pipe_through :api
+
+    get "/users", UserController, :index
+    get "/users/:id", UserController, :show
+    post "/users", UserController, :create
+    patch "/users/:id", UserController, :update
+    delete "/users/:id", UserController, :delete
+
+    get "/products", ProductController, :index
+    get "/products/:id", ProductController, :show
+  end
+
+  scope "/api", MilkywayApiWeb do
+    pipe_through [:api, :api_auth]
+
+    get "/basket", BasketController, :index
+    post "/products/:id/basket", BasketController, :create
+    delete "/basket/:id", BasketController, :delete
+
+    post "/products", ProductController, :create
+    patch "/products/:id", ProductController, :update
+    delete "/products/:id", ProductController, :delete
+    get "/products/:id/buyers", ProductController, :buyers
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

@@ -3,7 +3,7 @@ import Config
 # Configure your database
 config :milkyway_api, MilkywayApi.Repo,
   username: "monochrome",
-  password: "",
+  password: "password",
   hostname: "localhost",
   database: "milkyway_api_dev",
   stacktrace: true,
