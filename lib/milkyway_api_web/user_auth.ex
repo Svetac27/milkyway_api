@@ -1,6 +1,7 @@
 defmodule MilkywayApiWeb.UserAuth do
   import Plug.Conn
 
+  alias MilkywayApi.Accounts
   alias MilkywayApi.Accounts.User
   alias MilkywayApi.Repo
 
@@ -13,6 +14,16 @@ defmodule MilkywayApiWeb.UserAuth do
   def call(conn, _opts), do: conn
 
   defp fetch_current_user(conn) do
+    case get_bearer_token(conn) do
+      {:ok, token} ->
+        Accounts.get_user_by_token(token)
+
+      :error ->
+        fetch_current_user_from_legacy_header(conn)
+    end
+  end
+
+  defp fetch_current_user_from_legacy_header(conn) do
     conn
     |> get_req_header("x-user-id")
     |> List.first()
@@ -20,6 +31,13 @@ defmodule MilkywayApiWeb.UserAuth do
     |> case do
       {:ok, user_id} -> Repo.get(User, user_id)
       :error -> nil
+    end
+  end
+
+  defp get_bearer_token(conn) do
+    case get_req_header(conn, "authorization") do
+      ["Bearer " <> token | _] when byte_size(token) > 0 -> {:ok, token}
+      _ -> :error
     end
   end
 

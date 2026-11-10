@@ -40,6 +40,28 @@ defmodule MilkywayApiWeb.UserController do
     end
   end
 
+  def login(conn, params) do
+    email = Map.get(params, "email")
+    password = Map.get(params, "password")
+
+    case Accounts.authenticate_user(email, password) do
+      {:ok, %User{} = user} ->
+        token = Accounts.generate_user_token(user)
+
+        json(conn, %{
+          data: %{
+            token: token,
+            user: serialize_user(user)
+          }
+        })
+
+      :error ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "invalid_credentials"})
+    end
+  end
+
   def update(conn, %{"id" => id} = params) do
     attrs = Map.take(params, ["email", "password", "role"])
 

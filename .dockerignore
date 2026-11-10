@@ -1,0 +1,11 @@
+.git
+.github
+.env
+.DS_Store
+_build
+cover
+deps
+doc
+erl_crash.dump
+node_modules
+tmp

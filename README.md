@@ -7,6 +7,34 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4400`](http://localhost:4400) from your browser.
 
+## Run with Docker
+
+Requirements: Docker with the Compose plugin.
+
+1. Create a local environment file and generate a secret:
+
+   ```bash
+   cp .env.example .env
+   mix phx.gen.secret
+   ```
+
+   Copy the generated value into `SECRET_KEY_BASE` in `.env`.
+
+2. Build the image and start the app and PostgreSQL:
+
+   ```bash
+   docker compose up --build
+   ```
+
+   The app runs database migrations on startup. Visit [`localhost:4400`](http://localhost:4400).
+
+3. Stop the containers with `Ctrl+C`, or run `docker compose down` in another terminal.
+   The database data is kept in a Docker volume; to remove it too, run
+   `docker compose down -v`.
+
+The Compose setup is intended for local use. Change the PostgreSQL credentials and
+use a separately generated secret before deploying anywhere accessible to others.
+
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
 ## API quickstart (users)

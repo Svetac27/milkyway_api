@@ -3,6 +3,7 @@ defmodule MilkywayApiWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug MilkywayApiWeb.Plugs.CORS
   end
 
   pipeline :api_auth do
@@ -12,9 +13,13 @@ defmodule MilkywayApiWeb.Router do
   scope "/api", MilkywayApiWeb do
     pipe_through :api
 
+    options "/*path", CORSController, :preflight
+
     get "/users", UserController, :index
     get "/users/:id", UserController, :show
     post "/users", UserController, :create
+    post "/login", UserController, :login
+    post "/auth/login", UserController, :login
     patch "/users/:id", UserController, :update
     delete "/users/:id", UserController, :delete
 
