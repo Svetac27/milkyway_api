@@ -11,7 +11,7 @@ defmodule MilkywayApi.Accounts.User do
     timestamps(type: :utc_datetime)
   end
 
-  @roles ["buyer", "seller"]
+  @roles ["buyer", "seller", "admin"]
 
   @doc false
   def changeset(user, attrs) do

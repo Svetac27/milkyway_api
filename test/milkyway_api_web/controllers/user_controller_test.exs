@@ -8,8 +8,13 @@ defmodule MilkywayApiWeb.UserControllerTest do
   describe "index" do
     test "returns users without hashed_password", %{conn: conn} do
       user = create_user!()
+      admin = create_user!("admin")
 
-      conn = get(conn, "/api/users")
+      conn =
+        conn
+        |> put_user_auth(admin)
+        |> get("/api/users")
+
       assert %{"data" => users} = json_response(conn, 200)
 
       assert Enum.any?(users, fn current_user ->
@@ -24,8 +29,13 @@ defmodule MilkywayApiWeb.UserControllerTest do
   describe "show" do
     test "returns a user by id", %{conn: conn} do
       user = create_user!()
+      admin = create_user!("admin")
 
-      conn = get(conn, "/api/users/#{user.id}")
+      conn =
+        conn
+        |> put_user_auth(admin)
+        |> get("/api/users/#{user.id}")
+
       assert %{"data" => returned_user} = json_response(conn, 200)
 
       assert returned_user["id"] == user.id
@@ -58,14 +68,60 @@ defmodule MilkywayApiWeb.UserControllerTest do
       assert Map.has_key?(details, "email")
       assert Map.has_key?(details, "password")
     end
+
+    test "does not allow public registration as admin", %{conn: conn} do
+      conn =
+        post(conn, "/api/users", %{
+          "email" => unique_email(),
+          "password" => "password123",
+          "role" => "admin"
+        })
+
+      assert %{"error" => "unauthorized"} = json_response(conn, 401)
+    end
+
+    test "does not allow a non-admin to create an admin", %{conn: conn} do
+      seller = create_user!("seller")
+
+      conn =
+        conn
+        |> put_user_auth(seller)
+        |> post("/api/users", %{
+          "email" => unique_email(),
+          "password" => "password123",
+          "role" => "admin"
+        })
+
+      assert %{"error" => "admin_only"} = json_response(conn, 403)
+    end
+
+    test "allows an admin to create another admin", %{conn: conn} do
+      admin = create_user!("admin")
+
+      conn =
+        conn
+        |> put_user_auth(admin)
+        |> post("/api/users", %{
+          "email" => unique_email(),
+          "password" => "password123",
+          "role" => "admin"
+        })
+
+      assert %{"data" => %{"role" => "admin"}} = json_response(conn, 201)
+    end
   end
 
   describe "update" do
     test "updates user", %{conn: conn} do
       user = create_user!()
+      admin = create_user!("admin")
       params = %{"email" => unique_email(), "password" => "password123", "role" => "buyer"}
 
-      conn = patch(conn, "/api/users/#{user.id}", params)
+      conn =
+        conn
+        |> put_user_auth(admin)
+        |> patch("/api/users/#{user.id}", params)
+
       assert %{"data" => updated_user} = json_response(conn, 200)
 
       assert updated_user["id"] == user.id
@@ -78,12 +134,45 @@ defmodule MilkywayApiWeb.UserControllerTest do
   describe "delete" do
     test "deletes user", %{conn: conn} do
       user = create_user!()
+      admin = create_user!("admin")
 
-      conn = delete(conn, "/api/users/#{user.id}")
+      conn =
+        conn
+        |> put_user_auth(admin)
+        |> delete("/api/users/#{user.id}")
+
       assert response(conn, 204)
 
-      conn = get(build_conn(), "/api/users/#{user.id}")
+      conn =
+        build_conn()
+        |> put_user_auth(admin)
+        |> get("/api/users/#{user.id}")
+
       assert json_response(conn, 404)
+    end
+  end
+
+  describe "admin authorization" do
+    test "requires an admin to list users", %{conn: conn} do
+      buyer = create_user!("buyer")
+
+      conn =
+        conn
+        |> put_user_auth(buyer)
+        |> get("/api/users")
+
+      assert %{"error" => "admin_only"} = json_response(conn, 403)
+    end
+
+    test "does not accept an unverified user id header", %{conn: conn} do
+      admin = create_user!("admin")
+
+      conn =
+        conn
+        |> put_req_header("x-user-id", Integer.to_string(admin.id))
+        |> get("/api/users")
+
+      assert %{"error" => "unauthorized"} = json_response(conn, 401)
     end
   end
 
@@ -164,12 +253,12 @@ defmodule MilkywayApiWeb.UserControllerTest do
     end
   end
 
-  defp create_user! do
+  defp create_user!(role \\ "seller") do
     {:ok, user} =
       Accounts.create_user(%{
         email: unique_email(),
         password: "password123",
-        role: "seller"
+        role: role
       })
 
     user

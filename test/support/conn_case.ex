@@ -35,4 +35,9 @@ defmodule MilkywayApiWeb.ConnCase do
     MilkywayApi.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
+
+  def put_user_auth(conn, user) do
+    token = MilkywayApi.Accounts.generate_user_token(user)
+    Plug.Conn.put_req_header(conn, "authorization", "Bearer #{token}")
+  end
 end

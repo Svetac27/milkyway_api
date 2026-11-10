@@ -2,7 +2,7 @@ defmodule MilkywayApiWeb.Plugs.CORS do
   import Plug.Conn
 
   @allowed_methods "GET,POST,PATCH,PUT,DELETE,OPTIONS"
-  @allowed_headers "content-type,authorization,x-user-id"
+  @allowed_headers "content-type,authorization"
   @max_age "86400"
 
   def init(opts), do: opts

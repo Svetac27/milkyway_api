@@ -13,7 +13,7 @@ defmodule MilkywayApiWeb.BasketControllerTest do
 
       conn =
         conn
-        |> put_req_header("x-user-id", Integer.to_string(buyer.id))
+        |> put_user_auth(buyer)
         |> post("/api/products/#{product.id}/basket")
 
       assert %{"data" => returned_product} = json_response(conn, 201)
@@ -26,10 +26,23 @@ defmodule MilkywayApiWeb.BasketControllerTest do
 
       conn =
         conn
-        |> put_req_header("x-user-id", Integer.to_string(seller.id))
+        |> put_user_auth(seller)
         |> post("/api/products/#{product.id}/basket")
 
       assert %{"error" => "buyer_only"} = json_response(conn, 403)
+    end
+
+    test "admin can add any product to a basket", %{conn: conn} do
+      admin = create_user!("admin")
+      product = create_product!(admin.id)
+
+      conn =
+        conn
+        |> put_user_auth(admin)
+        |> post("/api/products/#{product.id}/basket")
+
+      assert %{"data" => returned_product} = json_response(conn, 201)
+      assert returned_product["id"] == product.id
     end
 
     test "buyer can list own basket products", %{conn: conn} do
@@ -42,11 +55,33 @@ defmodule MilkywayApiWeb.BasketControllerTest do
 
       conn =
         conn
-        |> put_req_header("x-user-id", Integer.to_string(buyer.id))
+        |> put_user_auth(buyer)
         |> get("/api/basket")
 
       assert %{"data" => products} = json_response(conn, 200)
       assert Enum.any?(products, fn basket_product -> basket_product["id"] == product.id end)
+    end
+
+    test "admin can list all basket items", %{conn: conn} do
+      admin = create_user!("admin")
+      buyer = create_user!("buyer")
+      seller = create_user!("seller")
+      product = create_product!(seller.id)
+
+      assert {:ok, basket_item} =
+               Orders.add_to_basket(%{buyer_id: buyer.id, product_id: product.id})
+
+      conn =
+        conn
+        |> put_user_auth(admin)
+        |> get("/api/basket")
+
+      assert %{"data" => items} = json_response(conn, 200)
+
+      assert Enum.any?(items, fn item ->
+               item["id"] == basket_item.id and item["buyer_id"] == buyer.id and
+                 item["product"]["id"] == product.id
+             end)
     end
 
     test "buyer can delete own basket item", %{conn: conn} do
@@ -59,7 +94,7 @@ defmodule MilkywayApiWeb.BasketControllerTest do
 
       conn =
         conn
-        |> put_req_header("x-user-id", Integer.to_string(buyer.id))
+        |> put_user_auth(buyer)
         |> delete("/api/basket/#{basket_item.id}")
 
       assert response(conn, 204)
@@ -77,10 +112,28 @@ defmodule MilkywayApiWeb.BasketControllerTest do
 
       conn =
         conn
-        |> put_req_header("x-user-id", Integer.to_string(buyer2.id))
+        |> put_user_auth(buyer2)
         |> delete("/api/basket/#{basket_item.id}")
 
       assert %{"error" => "not_owner"} = json_response(conn, 403)
+    end
+
+    test "admin can delete any basket item", %{conn: conn} do
+      admin = create_user!("admin")
+      buyer = create_user!("buyer")
+      seller = create_user!("seller")
+      product = create_product!(seller.id)
+
+      assert {:ok, basket_item} =
+               Orders.add_to_basket(%{buyer_id: buyer.id, product_id: product.id})
+
+      conn =
+        conn
+        |> put_user_auth(admin)
+        |> delete("/api/basket/#{basket_item.id}")
+
+      assert response(conn, 204)
+      assert is_nil(Orders.get_basket_item(basket_item.id))
     end
 
     test "seller cannot delete basket item", %{conn: conn} do
@@ -93,7 +146,7 @@ defmodule MilkywayApiWeb.BasketControllerTest do
 
       conn =
         conn
-        |> put_req_header("x-user-id", Integer.to_string(seller.id))
+        |> put_user_auth(seller)
         |> delete("/api/basket/#{basket_item.id}")
 
       assert %{"error" => "buyer_only"} = json_response(conn, 403)
@@ -117,7 +170,7 @@ defmodule MilkywayApiWeb.BasketControllerTest do
 
       conn =
         conn
-        |> put_req_header("x-user-id", Integer.to_string(buyer.id))
+        |> put_user_auth(buyer)
         |> delete("/api/basket/9999")
 
       assert %{"error" => "not_found"} = json_response(conn, 404)
@@ -135,7 +188,7 @@ defmodule MilkywayApiWeb.BasketControllerTest do
 
       conn =
         conn
-        |> put_req_header("x-user-id", Integer.to_string(seller.id))
+        |> put_user_auth(seller)
         |> get("/api/products/#{product.id}/buyers")
 
       assert %{"data" => buyers} = json_response(conn, 200)
@@ -149,7 +202,7 @@ defmodule MilkywayApiWeb.BasketControllerTest do
 
       conn =
         conn
-        |> put_req_header("x-user-id", Integer.to_string(another_seller.id))
+        |> put_user_auth(another_seller)
         |> get("/api/products/#{product.id}/buyers")
 
       assert %{"error" => "not_owner"} = json_response(conn, 403)

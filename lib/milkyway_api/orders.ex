@@ -125,6 +125,15 @@ defmodule MilkywayApi.Orders do
   end
 
   @doc """
+  Returns all basket items with their products preloaded.
+  """
+  def list_basket_items do
+    BasketItem
+    |> preload([:product])
+    |> Repo.all()
+  end
+
+  @doc """
   Returns buyers who added a product to basket.
   """
   def list_buyers_for_product(product_id) do

@@ -9,8 +9,16 @@ defmodule MilkywayApiWeb.BasketController do
 
     with {:ok, user} <- require_auth(user),
          :ok <- require_buyer(user) do
-      basket_products = Orders.list_basket_products_for_buyer(user.id)
-      json(conn, %{data: basket_products})
+      basket =
+        if user.role == "admin" do
+          Enum.map(Orders.list_basket_items(), fn item ->
+            %{id: item.id, buyer_id: item.buyer_id, product: item.product}
+          end)
+        else
+          Orders.list_basket_products_for_buyer(user.id)
+        end
+
+      json(conn, %{data: basket})
     else
       {:error, status, message} ->
         conn |> put_status(status) |> json(%{error: message})
@@ -60,12 +68,16 @@ defmodule MilkywayApiWeb.BasketController do
   defp require_auth(nil), do: {:error, :unauthorized, "unauthorized"}
   defp require_auth(user), do: {:ok, user}
 
-  defp require_buyer(%{role: "buyer"}), do: :ok
+  defp require_buyer(%{role: role}) when role in ["buyer", "admin"], do: :ok
   defp require_buyer(_), do: {:error, :forbidden, "buyer_only"}
+
+  defp forbid_owner(%{role: "admin"}, _seller_id), do: :ok
 
   defp forbid_owner(user, seller_id) do
     if user.id == seller_id, do: {:error, :forbidden, "cannot_buy_own_product"}, else: :ok
   end
+
+  defp require_owner(%{role: "admin"}, _owner_id), do: :ok
 
   defp require_owner(user, owner_id) do
     if user.id == owner_id, do: :ok, else: {:error, :forbidden, "not_owner"}

@@ -15,13 +15,8 @@ defmodule MilkywayApiWeb.Router do
 
     options "/*path", CORSController, :preflight
 
-    get "/users", UserController, :index
-    get "/users/:id", UserController, :show
-    post "/users", UserController, :create
     post "/login", UserController, :login
     post "/auth/login", UserController, :login
-    patch "/users/:id", UserController, :update
-    delete "/users/:id", UserController, :delete
 
     get "/products", ProductController, :index
     get "/products/:id", ProductController, :show
@@ -29,6 +24,12 @@ defmodule MilkywayApiWeb.Router do
 
   scope "/api", MilkywayApiWeb do
     pipe_through [:api, :api_auth]
+
+    get "/users", UserController, :index
+    get "/users/:id", UserController, :show
+    post "/users", UserController, :create
+    patch "/users/:id", UserController, :update
+    delete "/users/:id", UserController, :delete
 
     get "/basket", BasketController, :index
     post "/products/:id/basket", BasketController, :create

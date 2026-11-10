@@ -108,8 +108,10 @@ defmodule MilkywayApiWeb.ProductController do
   defp require_auth(nil), do: {:error, :unauthorized, "unauthorized"}
   defp require_auth(user), do: {:ok, user}
 
-  defp require_seller(%{role: "seller"}), do: :ok
+  defp require_seller(%{role: role}) when role in ["seller", "admin"], do: :ok
   defp require_seller(_), do: {:error, :forbidden, "seller_only"}
+
+  defp require_owner(%{role: "admin"}, %Product{}), do: :ok
 
   defp require_owner(user, %Product{seller_id: seller_id}) do
     if user.id == seller_id, do: :ok, else: {:error, :forbidden, "not_owner"}

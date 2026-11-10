@@ -35,6 +35,19 @@ defmodule MilkywayApi.AccountsTest do
       assert is_binary(user.hashed_password)
     end
 
+    test "create_user/1 with admin role creates an admin user" do
+      valid_attrs = %{
+        role: "admin",
+        email: "user-#{System.unique_integer([:positive])}@example.com",
+        password: "password123"
+      }
+
+      assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
+      assert user.role == "admin"
+      assert user.email == valid_attrs.email
+      assert is_binary(user.hashed_password)
+    end
+
     test "create_user/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_user(@invalid_attrs)
     end
