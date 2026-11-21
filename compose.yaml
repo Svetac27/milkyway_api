@@ -1,9 +1,11 @@
 services:
   db:
     image: postgres:16-alpine
+    ports:
+      - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: milkyway_api_prod
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -19,7 +21,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: ecto://postgres:postgres@db/milkyway_api_prod
+      DATABASE_URL: ecto://postgres:${POSTGRES_PASSWORD}@db/milkyway_api_prod
       PHX_HOST: localhost
       PHX_SERVER: "true"
       PORT: "4400"
@@ -27,5 +29,19 @@ services:
     ports:
       - "4400:4400"
 
+  pgadmin:
+    image: dpage/pgadmin4:9.19
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:?Set PGADMIN_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
 volumes:
   postgres_data:
+  pgadmin_data:
