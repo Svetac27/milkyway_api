@@ -5,7 +5,7 @@ defmodule MilkywayApiWeb.GenderController do
   alias MilkywayApi.Accounts
   alias OpenApiSpex.Schema
 
-  operation :index,
+  operation(:index,
     summary: "List genders",
     responses: [
       ok:
@@ -28,8 +28,9 @@ defmodule MilkywayApiWeb.GenderController do
            }
          }}
     ]
+  )
 
-  operation :show, false
+  operation(:show, false)
 
   def index(conn, _params) do
     json(conn, %{data: Accounts.list_genders()})

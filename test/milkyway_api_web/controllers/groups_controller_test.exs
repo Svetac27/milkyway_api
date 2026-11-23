@@ -1,11 +1,11 @@
 defmodule MilkywayApiWeb.GroupsControllerTest do
   use MilkywayApiWeb.ConnCase, async: true
 
-  alias MilkywayApi.Accounts.Groups
+  alias MilkywayApi.Accounts.Group
   alias MilkywayApi.Repo
 
   test "lists groups without authentication and permits frontend origins", %{conn: conn} do
-    group = Repo.insert!(%Groups{name: "Example"})
+    group = Repo.insert!(%Group{name: "Example"})
 
     conn =
       conn

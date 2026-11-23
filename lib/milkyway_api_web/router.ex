@@ -14,6 +14,10 @@ defmodule MilkywayApiWeb.Router do
     plug OpenApiSpex.Plug.PutApiSpec, module: MilkywayApiWeb.ApiSpec
   end
 
+  pipeline :require_auth do
+    plug MilkywayApiWeb.Plugs.RequireAuth
+  end
+
   scope "/api" do
     pipe_through [:api, :api_spec]
     get "/openapi", OpenApiSpex.Plug.RenderSpec, []
@@ -31,18 +35,23 @@ defmodule MilkywayApiWeb.Router do
     post "/login", UserController, :login
     post "/auth/login", UserController, :login
 
-    get "/categories", CategoryController, :index
-    get "/categories/:id", CategoryController, :show
+    get "/categories", CategoriesController, :index
+    get "/categories/:id", CategoriesController, :show
     get "/genders", GenderController, :index
     get "/genders/:id", GenderController, :show
     get "/groups", GroupsController, :index
     get "/groups/:id", GroupsController, :show
-    get "/members", MembersController, :index
-    get "/members/:id", MembersController, :show
     get "/member_data", MemberDataController, :index
     get "/member_data/:id", MemberDataController, :show
     get "/products", ProductController, :index
     get "/products/:id", ProductController, :show
+  end
+
+  scope "/api", MilkywayApiWeb do
+    pipe_through [:api, :api_auth, :require_auth]
+
+    get "/members", MembersController, :index
+    get "/members/:id", MembersController, :show
   end
 
   scope "/api", MilkywayApiWeb do

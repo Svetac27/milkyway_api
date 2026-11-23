@@ -2,6 +2,9 @@ defmodule MilkywayApi.Accounts.MemberData do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder,
+           only: [:id, :name, :key, :type, :hide, :order, :inserted_at, :updated_at]}
+
   schema "member_data" do
     field :name, :string
     field :key, :string

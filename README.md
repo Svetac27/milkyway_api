@@ -51,7 +51,7 @@ Admins can also create other admins through `POST /api/users`.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
-## API quickstart (genders)
+## API quickstart (member lookups)
 
 `GET /api/categories` is public and returns the available categories:
 
@@ -71,10 +71,12 @@ curl http://localhost:4400/api/genders
 curl http://localhost:4400/api/groups
 ```
 
-`GET /api/members` is public and returns the available members:
+`GET /api/members` requires a bearer token from `POST /api/login` and returns
+member records, including sensitive personal fields:
 
 ```bash
-curl http://localhost:4400/api/members
+curl http://localhost:4400/api/members \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 `GET /api/member_data` is public and returns the available member_data:
@@ -83,11 +85,12 @@ curl http://localhost:4400/api/members
 curl http://localhost:4400/api/member_data
 ```
 
-The response has the form `{"data":[{"id":1,"name":"Example","inserted_at":"...","updated_at":"..."}]}`.
-An empty table returns `{"data":[]}`; genders are not seeded automatically.
+Each response contains a `data` array; an empty table returns `{"data":[]}`.
+The groups table is created by a migration and is initially empty.
 
 Swagger UI is available at `http://localhost:4400/swaggerui`, with its OpenAPI
-specification at `/api/openapi`. Currently, the gender list is documented.
+specification at `/api/openapi`. The list endpoints above are documented there.
+Use **Authorize** to supply a bearer token for the members endpoint.
 
 ## API quickstart (users)
 

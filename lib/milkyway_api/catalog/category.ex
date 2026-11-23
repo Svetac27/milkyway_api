@@ -2,6 +2,8 @@ defmodule MilkywayApi.Catalog.Category do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:id, :name, :inserted_at, :updated_at]}
+
   schema "categories" do
     field :name, :string
 

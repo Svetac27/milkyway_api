@@ -2,7 +2,30 @@ defmodule MilkywayApi.Accounts.Member do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "member" do
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :active,
+             :name,
+             :middle_name,
+             :last_name,
+             :gender,
+             :email,
+             :phone,
+             :generation,
+             :birthdate,
+             :category,
+             :group,
+             :jmbg,
+             :registration,
+             :medical,
+             :first_registration,
+             :last_registration,
+             :inserted_at,
+             :updated_at
+           ]}
+
+  schema "members" do
     field :active, :boolean, default: false
     field :name, :string
     field :middle_name, :string
@@ -26,7 +49,41 @@ defmodule MilkywayApi.Accounts.Member do
   @doc false
   def changeset(member, attrs) do
     member
-    |> cast(attrs, [:active, :name, :middle_name, :last_name, :gender, :email, :phone, :generation, :birthdate, :category, :group, :jmbg, :registration, :medical, :first_registration, :last_registration])
-    |> validate_required([:active, :name, :middle_name, :last_name, :gender, :email, :phone, :generation, :birthdate, :category, :group, :jmbg, :registration, :medical, :first_registration, :last_registration])
+    |> cast(attrs, [
+      :active,
+      :name,
+      :middle_name,
+      :last_name,
+      :gender,
+      :email,
+      :phone,
+      :generation,
+      :birthdate,
+      :category,
+      :group,
+      :jmbg,
+      :registration,
+      :medical,
+      :first_registration,
+      :last_registration
+    ])
+    |> validate_required([
+      :active,
+      :name,
+      :middle_name,
+      :last_name,
+      :gender,
+      :email,
+      :phone,
+      :generation,
+      :birthdate,
+      :category,
+      :group,
+      :jmbg,
+      :registration,
+      :medical,
+      :first_registration,
+      :last_registration
+    ])
   end
 end

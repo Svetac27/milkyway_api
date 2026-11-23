@@ -1,7 +1,7 @@
 defmodule MilkywayApiWeb.CategoriesControllerTest do
   use MilkywayApiWeb.ConnCase, async: true
 
-  alias MilkywayApi.Accounts.Category
+  alias MilkywayApi.Catalog.Category
   alias MilkywayApi.Repo
 
   test "lists categories without authentication and permits frontend origins", %{conn: conn} do
