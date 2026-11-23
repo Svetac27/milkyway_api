@@ -6,10 +6,37 @@ defmodule MilkywayApi.Accounts do
   import Ecto.Query, warn: false
   alias MilkywayApi.Repo
 
-  alias MilkywayApi.Accounts.{Gender, User}
+  alias MilkywayApi.Accounts.{Category, Gender, Group, MemberData, Member, User}
 
   @token_salt "user_auth"
 
+  @doc """
+  Returns the list of categories.
+  """
+  def list_categories do
+    Repo.all(Category)
+  end
+
+  @doc """
+  Returns the list of groups.
+  """
+  def list_groups do
+    Repo.all(Group)
+  end
+
+  @doc """
+  Returns the list of members.
+  """
+  def list_members do
+    Repo.all(Member)
+  end
+
+  @doc """
+  Returns the list of member data.
+  """
+  def list_member_data do
+    Repo.all(MemberData)
+  end
   @doc """
   Returns the list of genders.
   """
