@@ -53,10 +53,34 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 ## API quickstart (genders)
 
+`GET /api/categories` is public and returns the available categories:
+
+```bash
+curl http://localhost:4400/api/categories
+```
+
 `GET /api/genders` is public and returns the available genders:
 
 ```bash
 curl http://localhost:4400/api/genders
+```
+
+`GET /api/groups` is public and returns the available groups:
+
+```bash
+curl http://localhost:4400/api/groups
+```
+
+`GET /api/members` is public and returns the available members:
+
+```bash
+curl http://localhost:4400/api/members
+```
+
+`GET /api/member_data` is public and returns the available member_data:
+
+```bash
+curl http://localhost:4400/api/member_data
 ```
 
 The response has the form `{"data":[{"id":1,"name":"Example","inserted_at":"...","updated_at":"..."}]}`.
