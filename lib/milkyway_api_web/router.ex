@@ -18,7 +18,16 @@ defmodule MilkywayApiWeb.Router do
     post "/login", UserController, :login
     post "/auth/login", UserController, :login
 
+    get "/categories", CategoryController, :index
+    get "/categories/:id", CategoryController, :show
     get "/genders", GenderController, :index
+    get "/genders/:id", GenderController, :show
+    get "/groups", GroupsController, :index
+    get "/groups/:id", GroupsController, :show
+    get "/members", MembersController, :index
+    get "/members/:id", MembersController, :show
+    get "/member_data", MemberDataController, :index
+    get "/member_data/:id", MemberDataController, :show
     get "/products", ProductController, :index
     get "/products/:id", ProductController, :show
   end
