@@ -51,6 +51,17 @@ Admins can also create other admins through `POST /api/users`.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
+## API quickstart (genders)
+
+`GET /api/genders` is public and returns the available genders:
+
+```bash
+curl http://localhost:4400/api/genders
+```
+
+The response has the form `{"data":[{"id":1,"name":"Example","inserted_at":"...","updated_at":"..."}]}`.
+An empty table returns `{"data":[]}`; genders are not seeded automatically.
+
 ## API quickstart (users)
 
 Base URL: `http://localhost:4400/api`
