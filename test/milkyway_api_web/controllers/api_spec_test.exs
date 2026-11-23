@@ -11,6 +11,24 @@ defmodule MilkywayApiWeb.ApiSpecTest do
     assert spec["paths"]["/api/groups"]["get"]["summary"] == "List groups"
     assert spec["paths"]["/api/member_data"]["get"]["summary"] == "List member data"
     assert spec["paths"]["/api/members"]["get"]["security"] == [%{"bearerAuth" => []}]
+
+    assert %{"type" => "string", "nullable" => true} =
+             get_in(spec, [
+               "paths",
+               "/api/members",
+               "get",
+               "responses",
+               "200",
+               "content",
+               "application/json",
+               "schema",
+               "properties",
+               "data",
+               "items",
+               "properties",
+               "avatar"
+             ])
+
     assert spec["components"]["securitySchemes"]["bearerAuth"]["scheme"] == "bearer"
     assert [%{"url" => "/"}] = spec["servers"]
   end

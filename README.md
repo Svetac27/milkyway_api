@@ -72,7 +72,7 @@ curl http://localhost:4400/api/groups
 ```
 
 `GET /api/members` requires a bearer token from `POST /api/login` and returns
-member records, including sensitive personal fields:
+member records, including the nullable `avatar` string and sensitive personal fields:
 
 ```bash
 curl http://localhost:4400/api/members \

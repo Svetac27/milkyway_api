@@ -6,6 +6,7 @@ defmodule MilkywayApi.Accounts.Member do
            only: [
              :id,
              :active,
+             :avatar,
              :name,
              :middle_name,
              :last_name,
@@ -27,6 +28,7 @@ defmodule MilkywayApi.Accounts.Member do
 
   schema "members" do
     field :active, :boolean, default: false
+    field :avatar, :string
     field :name, :string
     field :middle_name, :string
     field :last_name, :string
@@ -51,6 +53,7 @@ defmodule MilkywayApi.Accounts.Member do
     member
     |> cast(attrs, [
       :active,
+      :avatar,
       :name,
       :middle_name,
       :last_name,
@@ -69,6 +72,7 @@ defmodule MilkywayApi.Accounts.Member do
     ])
     |> validate_required([
       :active,
+      :avatar,
       :name,
       :middle_name,
       :last_name,

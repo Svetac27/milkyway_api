@@ -21,6 +21,7 @@ defmodule MilkywayApiWeb.MembersController do
                  properties: %{
                    id: %Schema{type: :integer},
                    active: %Schema{type: :boolean},
+                   avatar: %Schema{type: :string, nullable: true},
                    name: %Schema{type: :string, nullable: true},
                    middle_name: %Schema{type: :string, nullable: true},
                    last_name: %Schema{type: :string, nullable: true},

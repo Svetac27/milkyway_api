@@ -7,7 +7,15 @@ defmodule MilkywayApiWeb.MembersControllerTest do
   alias MilkywayApi.Repo
 
   test "lists members for authenticated users and permits frontend origins", %{conn: conn} do
-    member = Repo.insert!(%Member{name: "Example", jmbg: "123", medical: ~D[2026-01-01]})
+    member =
+      Repo.insert!(%Member{
+        name: "Example",
+        avatar: "/avatars/example.png",
+        jmbg: "123",
+        medical: ~D[2026-01-01]
+      })
+
+    without_avatar = Repo.insert!(%Member{name: "Without avatar"})
     user = user_fixture()
 
     conn =
@@ -16,13 +24,18 @@ defmodule MilkywayApiWeb.MembersControllerTest do
       |> put_user_auth(user)
       |> get("/api/members")
 
-    assert %{
-             "data" => [
-               %{"id" => id, "name" => "Example", "jmbg" => "123", "medical" => "2026-01-01"}
-             ]
-           } = json_response(conn, 200)
+    assert %{"data" => members} = json_response(conn, 200)
 
-    assert id == member.id
+    assert %{
+             "id" => _,
+             "name" => "Example",
+             "avatar" => "/avatars/example.png",
+             "jmbg" => "123",
+             "medical" => "2026-01-01"
+           } =
+             Enum.find(members, &(&1["id"] == member.id))
+
+    assert %{"avatar" => nil} = Enum.find(members, &(&1["id"] == without_avatar.id))
     assert get_resp_header(conn, "access-control-allow-origin") == ["http://localhost:5173"]
   end
 
