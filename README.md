@@ -86,6 +86,9 @@ curl http://localhost:4400/api/member_data
 The response has the form `{"data":[{"id":1,"name":"Example","inserted_at":"...","updated_at":"..."}]}`.
 An empty table returns `{"data":[]}`; genders are not seeded automatically.
 
+Swagger UI is available at `http://localhost:4400/swaggerui`, with its OpenAPI
+specification at `/api/openapi`. Currently, the gender list is documented.
+
 ## API quickstart (users)
 
 Base URL: `http://localhost:4400/api`

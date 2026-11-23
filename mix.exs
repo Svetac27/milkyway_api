@@ -43,6 +43,7 @@ defmodule MilkywayApi.MixProject do
       {:phoenix_ecto, "~> 4.5"},
       {:bcrypt_elixir, "~> 3.2"},
       {:ecto_sql, "~> 3.13"},
+      {:open_api_spex, "~> 3.21"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:swoosh, "~> 1.16"},

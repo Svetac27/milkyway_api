@@ -10,6 +10,19 @@ defmodule MilkywayApiWeb.Router do
     plug MilkywayApiWeb.UserAuth, :fetch_current_user
   end
 
+  pipeline :api_spec do
+    plug OpenApiSpex.Plug.PutApiSpec, module: MilkywayApiWeb.ApiSpec
+  end
+
+  scope "/api" do
+    pipe_through [:api, :api_spec]
+    get "/openapi", OpenApiSpex.Plug.RenderSpec, []
+  end
+
+  scope "/" do
+    get "/swaggerui", OpenApiSpex.Plug.SwaggerUI, path: "/api/openapi"
+  end
+
   scope "/api", MilkywayApiWeb do
     pipe_through :api
 
