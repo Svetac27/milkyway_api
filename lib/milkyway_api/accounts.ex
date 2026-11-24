@@ -33,10 +33,10 @@ defmodule MilkywayApi.Accounts do
   end
 
   @doc """
-  Returns the list of member data.
+  Returns member data ordered by order value, with null values last.
   """
   def list_member_data do
-    Repo.all(MemberData)
+    Repo.all(from data in MemberData, order_by: [asc_nulls_last: data.order, asc: data.id])
   end
 
   @doc """

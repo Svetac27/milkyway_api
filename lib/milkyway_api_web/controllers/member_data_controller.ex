@@ -7,6 +7,7 @@ defmodule MilkywayApiWeb.MemberDataController do
 
   operation(:index,
     summary: "List member data",
+    description: "Sorted by order ascending, with null values last and ties sorted by ID.",
     responses: [
       ok:
         {"Member data list", "application/json",

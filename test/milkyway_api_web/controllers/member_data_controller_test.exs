@@ -20,4 +20,14 @@ defmodule MilkywayApiWeb.MemberDataControllerTest do
   test "returns an empty list when no member data exist", %{conn: conn} do
     assert %{"data" => []} = conn |> get("/api/member_data") |> json_response(200)
   end
+
+  test "sorts by order ascending, placing null values last and breaking ties by ID", %{conn: conn} do
+    last = Repo.insert!(%MemberData{name: "No order"})
+    high = Repo.insert!(%MemberData{name: "High", order: 10})
+    first = Repo.insert!(%MemberData{name: "First", order: 1})
+    second = Repo.insert!(%MemberData{name: "Second", order: 1})
+
+    assert %{"data" => data} = conn |> get("/api/member_data") |> json_response(200)
+    assert Enum.map(data, & &1["id"]) == [first.id, second.id, high.id, last.id]
+  end
 end

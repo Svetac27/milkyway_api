@@ -20,6 +20,7 @@ defmodule MilkywayApiWeb.CategoriesController do
                  properties: %{
                    id: %Schema{type: :integer},
                    name: %Schema{type: :string, nullable: true},
+                   key: %Schema{type: :string, nullable: true},
                    inserted_at: %Schema{type: :string, format: :"date-time"},
                    updated_at: %Schema{type: :string, format: :"date-time"}
                  }

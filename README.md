@@ -79,13 +79,15 @@ curl http://localhost:4400/api/members \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-`GET /api/member_data` is public and returns the available member_data:
+`GET /api/member_data` is public and returns member data sorted by `order`
+ascending. Null values appear last, with ties sorted by ID:
 
 ```bash
 curl http://localhost:4400/api/member_data
 ```
 
 Each response contains a `data` array; an empty table returns `{"data":[]}`.
+Categories, genders, and groups include a nullable string `key` field.
 The groups table is created by a migration and is initially empty.
 
 Swagger UI is available at `http://localhost:4400/swaggerui`, with its OpenAPI

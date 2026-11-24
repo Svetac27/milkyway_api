@@ -20,6 +20,7 @@ defmodule MilkywayApiWeb.GenderController do
                  properties: %{
                    id: %Schema{type: :integer},
                    name: %Schema{type: :string},
+                   key: %Schema{type: :string, nullable: true},
                    inserted_at: %Schema{type: :string, format: :"date-time"},
                    updated_at: %Schema{type: :string, format: :"date-time"}
                  }

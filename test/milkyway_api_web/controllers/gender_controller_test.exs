@@ -5,15 +5,20 @@ defmodule MilkywayApiWeb.GenderControllerTest do
   alias MilkywayApi.Repo
 
   test "lists genders without authentication and permits frontend origins", %{conn: conn} do
-    gender = Repo.insert!(%Gender{name: "Example"})
+    gender = Repo.insert!(Gender.changeset(%Gender{}, %{name: "Example", key: "example"}))
+    without_key = Repo.insert!(%Gender{name: "No key"})
 
     conn =
       conn
       |> put_req_header("origin", "http://localhost:5173")
       |> get("/api/genders")
 
-    assert %{"data" => [%{"id" => id, "name" => "Example"}]} = json_response(conn, 200)
-    assert id == gender.id
+    assert %{"data" => data} = json_response(conn, 200)
+
+    assert %{"name" => "Example", "key" => "example"} =
+             Enum.find(data, &(&1["id"] == gender.id))
+
+    assert %{"key" => nil} = Enum.find(data, &(&1["id"] == without_key.id))
     assert get_resp_header(conn, "access-control-allow-origin") == ["http://localhost:5173"]
   end
 
