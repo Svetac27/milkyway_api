@@ -48,46 +48,46 @@ defmodule MilkywayApi.Accounts.Member do
     timestamps(type: :utc_datetime)
   end
 
+  @fields [
+    :active,
+    :avatar,
+    :name,
+    :middle_name,
+    :last_name,
+    :gender,
+    :email,
+    :phone,
+    :generation,
+    :birthdate,
+    :category,
+    :group,
+    :jmbg,
+    :registration,
+    :medical,
+    :first_registration,
+    :last_registration
+  ]
+
   @doc false
   def changeset(member, attrs) do
     member
-    |> cast(attrs, [
-      :active,
-      :avatar,
-      :name,
-      :middle_name,
-      :last_name,
-      :gender,
-      :email,
-      :phone,
-      :generation,
-      :birthdate,
-      :category,
-      :group,
-      :jmbg,
-      :registration,
-      :medical,
-      :first_registration,
-      :last_registration
-    ])
-    |> validate_required([
-      :active,
-      :avatar,
-      :name,
-      :middle_name,
-      :last_name,
-      :gender,
-      :email,
-      :phone,
-      :generation,
-      :birthdate,
-      :category,
-      :group,
-      :jmbg,
-      :registration,
-      :medical,
-      :first_registration,
-      :last_registration
-    ])
+    |> cast(normalize_active(attrs), @fields)
+    |> validate_required([:name, :active])
   end
+
+  @doc false
+  def update_changeset(member, attrs) do
+    fields =
+      if Map.has_key?(attrs, :name) or Map.has_key?(attrs, "name"),
+        do: [:name, :active],
+        else: [:active]
+
+    member
+    |> cast(normalize_active(attrs), @fields)
+    |> validate_required(fields)
+  end
+
+  defp normalize_active(%{"active" => nil} = attrs), do: Map.put(attrs, "active", false)
+  defp normalize_active(%{active: nil} = attrs), do: Map.put(attrs, :active, false)
+  defp normalize_active(attrs), do: attrs
 end

@@ -33,6 +33,42 @@ defmodule MilkywayApi.Accounts do
   end
 
   @doc """
+  Returns a member by ID, or nil if the ID is invalid or not found.
+  """
+  def get_member(id) do
+    case Ecto.Type.cast(:id, id) do
+      {:ok, id} when is_integer(id) and id > 0 and id <= 9_223_372_036_854_775_807 ->
+        Repo.get(Member, id)
+
+      _ ->
+        nil
+    end
+  end
+
+  @doc """
+  Creates a member.
+  """
+  def create_member(attrs) do
+    %Member{}
+    |> Member.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates the supplied fields of a member.
+  """
+  def update_member(%Member{} = member, attrs) do
+    member
+    |> Member.update_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a member.
+  """
+  def delete_member(%Member{} = member), do: Repo.delete(member)
+
+  @doc """
   Returns member data ordered by order value, with null values last.
   """
   def list_member_data do

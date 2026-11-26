@@ -52,6 +52,9 @@ defmodule MilkywayApiWeb.Router do
 
     get "/members", MembersController, :index
     get "/members/:id", MembersController, :show
+    post "/members", MembersController, :create
+    put "/members/:id", MembersController, :update
+    delete "/members/:id", MembersController, :delete
   end
 
   scope "/api", MilkywayApiWeb do

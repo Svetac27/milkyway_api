@@ -79,6 +79,32 @@ curl http://localhost:4400/api/members \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
+`GET /api/members/:id` also requires a bearer token. Only admins can create,
+update, or permanently delete members:
+
+```bash
+# Create: only name is required; active defaults to false.
+curl -X POST http://localhost:4400/api/members \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "content-type: application/json" \
+  -d '{"avatar":"/avatars/example.png","name":"Example","middle_name":"Middle","last_name":"Person","gender":"example","email":"member@example.com","phone":"123","generation":"2020","birthdate":"2000-01-01","category":"example","group":"example","jmbg":"123","registration":"2020-01-01","medical":"2020-01-01","first_registration":"2020-01-01","last_registration":"2020-01-01"}'
+
+# PUT changes only supplied fields. Name cannot be blank or null.
+curl -X PUT http://localhost:4400/api/members/1 \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "content-type: application/json" \
+  -d '{"name":"Updated"}'
+
+curl -X DELETE http://localhost:4400/api/members/1 \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+```
+
+Other fields may be null; a null `active` is stored as false. Dates use
+`YYYY-MM-DD`. Create returns `201`, update returns `200`, and delete
+returns `204`. Missing or invalid IDs return `404`; validation errors return
+`422` with `error` and `details`. Authentication failures return `401` and
+non-admin writes return `403`.
+
 `GET /api/member_data` is public and returns member data sorted by `order`
 ascending. Null values appear last, with ties sorted by ID:
 

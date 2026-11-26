@@ -31,6 +31,41 @@ defmodule MilkywayApiWeb.ApiSpecTest do
 
     assert spec["paths"]["/api/member_data"]["get"]["summary"] == "List member data"
     assert spec["paths"]["/api/members"]["get"]["security"] == [%{"bearerAuth" => []}]
+    assert spec["paths"]["/api/members"]["post"]["security"] == [%{"bearerAuth" => []}]
+
+    assert get_in(spec, [
+             "paths",
+             "/api/members",
+             "post",
+             "requestBody",
+             "content",
+             "application/json",
+             "schema",
+             "required"
+           ]) == ["name"]
+
+    for {path, method} <- [{"/api/members", "post"}, {"/api/members/{id}", "put"}] do
+      properties =
+        get_in(spec, [
+          "paths",
+          path,
+          method,
+          "requestBody",
+          "content",
+          "application/json",
+          "schema",
+          "properties"
+        ])
+
+      assert %{"type" => "string", "nullable" => false} = properties["name"]
+      assert %{"type" => "boolean", "nullable" => true} = properties["active"]
+      assert %{"type" => "string", "nullable" => true} = properties["avatar"]
+      assert %{"type" => "string", "nullable" => true} = properties["medical"]
+    end
+
+    for method <- ["get", "put", "delete"] do
+      assert spec["paths"]["/api/members/{id}"][method]["security"] == [%{"bearerAuth" => []}]
+    end
 
     assert %{"type" => "string", "nullable" => true} =
              get_in(spec, [
