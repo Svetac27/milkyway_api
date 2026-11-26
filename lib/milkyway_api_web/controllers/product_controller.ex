@@ -1,9 +1,81 @@
 defmodule MilkywayApiWeb.ProductController do
   use MilkywayApiWeb, :controller
+  use OpenApiSpex.ControllerSpecs
 
   alias MilkywayApi.Catalog
   alias MilkywayApi.Catalog.Product
   alias MilkywayApi.Orders
+  alias OpenApiSpex.Schema
+
+  @product_properties %{
+    id: %Schema{type: :integer},
+    title: %Schema{type: :string},
+    description: %Schema{type: :string},
+    price: %Schema{type: :integer, description: "Price in cents"},
+    status: %Schema{
+      type: :string,
+      enum: ["active", "reserved", "sold", "hidden"],
+      description: "Product status"
+    },
+    location: %Schema{type: :string},
+    seller_id: %Schema{type: :integer},
+    inserted_at: %Schema{type: :string, format: :"date-time"},
+    updated_at: %Schema{type: :string, format: :"date-time"}
+  }
+
+  @product_schema %Schema{type: :object, properties: @product_properties}
+  @product_response %Schema{type: :object, properties: %{data: @product_schema}}
+  @products_response %Schema{
+    type: :object,
+    properties: %{data: %Schema{type: :array, items: @product_schema}}
+  }
+
+  @writable_fields [:title, :description, :price, :status, :location]
+  @writable_properties @product_properties |> Map.take(@writable_fields)
+
+  @user_schema %Schema{
+    type: :object,
+    properties: %{
+      id: %Schema{type: :integer},
+      email: %Schema{type: :string},
+      role: %Schema{type: :string},
+      inserted_at: %Schema{type: :string, format: :"date-time"},
+      updated_at: %Schema{type: :string, format: :"date-time"}
+    }
+  }
+
+  @buyers_response %Schema{
+    type: :object,
+    properties: %{data: %Schema{type: :array, items: @user_schema}}
+  }
+
+  @error_schema %Schema{type: :object, properties: %{error: %Schema{type: :string}}}
+  @validation_schema %Schema{
+    type: :object,
+    properties: %{
+      error: %Schema{type: :string},
+      details: %Schema{
+        type: :object,
+        additionalProperties: %Schema{type: :array, items: %Schema{type: :string}}
+      }
+    }
+  }
+
+  @security [%{"bearerAuth" => []}]
+  @id_param [id: [in: :path, type: :integer, required: true, description: "Product ID"]]
+  @unauthorized {"Authentication required", "application/json", @error_schema}
+  @forbidden {"Insufficient permissions", "application/json", @error_schema}
+  @not_found {"Product not found", "application/json", @error_schema}
+  @invalid {"Validation failed", "application/json", @validation_schema}
+
+  operation(:index,
+    summary: "List products",
+    description: "Get a list of all available products. Public endpoint.",
+    tags: ["Products"],
+    responses: [
+      ok: {"Products list", "application/json", @products_response}
+    ]
+  )
 
   # Public: list
   def index(conn, _params) do
@@ -11,11 +83,42 @@ defmodule MilkywayApiWeb.ProductController do
     json(conn, %{data: products})
   end
 
+  operation(:show,
+    summary: "Get product details",
+    description: "Get detailed information about a specific product. Public endpoint.",
+    tags: ["Products"],
+    parameters: @id_param,
+    responses: [
+      ok: {"Product details", "application/json", @product_response},
+      not_found: @not_found
+    ]
+  )
+
   # Public: show
   def show(conn, %{"id" => id}) do
     product = Catalog.get_product!(id)
     json(conn, %{data: product})
   end
+
+  operation(:create,
+    summary: "Create product",
+    description: "Create a new product. Requires seller role.",
+    tags: ["Products"],
+    security: @security,
+    request_body:
+      {"Product data", "application/json",
+       %Schema{
+         type: :object,
+         properties: @writable_properties,
+         required: [:title, :description, :price, :status, :location]
+       }},
+    responses: [
+      created: {"Product created", "application/json", @product_response},
+      unauthorized: @unauthorized,
+      forbidden: @forbidden,
+      unprocessable_entity: @invalid
+    ]
+  )
 
   # Seller-only: create
   def create(conn, params) do
@@ -45,6 +148,27 @@ defmodule MilkywayApiWeb.ProductController do
     end
   end
 
+  operation(:update,
+    summary: "Update product",
+    description: "Update a product. Only the product owner or admin can update.",
+    tags: ["Products"],
+    security: @security,
+    parameters: @id_param,
+    request_body:
+      {"Product data", "application/json",
+       %Schema{
+         type: :object,
+         properties: @writable_properties
+       }},
+    responses: [
+      ok: {"Product updated", "application/json", @product_response},
+      unauthorized: @unauthorized,
+      forbidden: @forbidden,
+      not_found: @not_found,
+      unprocessable_entity: @invalid
+    ]
+  )
+
   # Seller-only + ownership: update
   def update(conn, %{"id" => id} = params) do
     user = conn.assigns[:current_user]
@@ -70,6 +194,20 @@ defmodule MilkywayApiWeb.ProductController do
     end
   end
 
+  operation(:delete,
+    summary: "Delete product",
+    description: "Delete a product. Only the product owner or admin can delete.",
+    tags: ["Products"],
+    security: @security,
+    parameters: @id_param,
+    responses: [
+      no_content: "Product deleted",
+      unauthorized: @unauthorized,
+      forbidden: @forbidden,
+      not_found: @not_found
+    ]
+  )
+
   # Seller-only + ownership: delete
   def delete(conn, %{"id" => id}) do
     user = conn.assigns[:current_user]
@@ -85,6 +223,20 @@ defmodule MilkywayApiWeb.ProductController do
         conn |> put_status(status) |> json(%{error: message})
     end
   end
+
+  operation(:buyers,
+    summary: "List product buyers",
+    description: "Get list of users who have this product in their basket. Only the product owner or admin can view.",
+    tags: ["Products"],
+    security: @security,
+    parameters: @id_param,
+    responses: [
+      ok: {"Buyers list", "application/json", @buyers_response},
+      unauthorized: @unauthorized,
+      forbidden: @forbidden,
+      not_found: @not_found
+    ]
+  )
 
   # Seller-only + ownership: list buyers who selected product in basket
   def buyers(conn, %{"id" => id}) do

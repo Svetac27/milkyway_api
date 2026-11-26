@@ -2,11 +2,11 @@ import Config
 
 # Configure your database
 config :milkyway_api, MilkywayApi.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "monochrome",
+  password: "",
   hostname: "localhost",
   port: 5432,
-  database: "milkyway_api_prod",
+  database: "milkyway_api_dev",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 

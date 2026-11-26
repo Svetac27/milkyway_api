@@ -28,7 +28,7 @@ defmodule MilkywayApiWeb.Router do
   end
 
   scope "/api", MilkywayApiWeb do
-    pipe_through :api
+    pipe_through [:api, :api_spec]
 
     options "/*path", CORSController, :preflight
 
@@ -48,7 +48,7 @@ defmodule MilkywayApiWeb.Router do
   end
 
   scope "/api", MilkywayApiWeb do
-    pipe_through [:api, :api_auth, :require_auth]
+    pipe_through [:api, :api_spec, :api_auth, :require_auth]
 
     get "/members", MembersController, :index
     get "/members/:id", MembersController, :show
@@ -58,7 +58,7 @@ defmodule MilkywayApiWeb.Router do
   end
 
   scope "/api", MilkywayApiWeb do
-    pipe_through [:api, :api_auth]
+    pipe_through [:api, :api_spec, :api_auth]
 
     get "/users", UserController, :index
     get "/users/:id", UserController, :show
@@ -66,14 +66,14 @@ defmodule MilkywayApiWeb.Router do
     patch "/users/:id", UserController, :update
     delete "/users/:id", UserController, :delete
 
-    get "/basket", BasketController, :index
-    post "/products/:id/basket", BasketController, :create
-    delete "/basket/:id", BasketController, :delete
-
     post "/products", ProductController, :create
     patch "/products/:id", ProductController, :update
     delete "/products/:id", ProductController, :delete
     get "/products/:id/buyers", ProductController, :buyers
+
+    get "/basket", BasketController, :index
+    post "/products/:id/basket", BasketController, :create
+    delete "/basket/:id", BasketController, :delete
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
