@@ -7,7 +7,7 @@ import Config
 # Run `mix help test` for more information.
 config :milkyway_api, MilkywayApi.Repo,
   username: System.get_env("PGUSER") || "monochrome",
-  password: System.get_env("PGPASSWORD") || "password",
+  password: System.get_env("PGPASSWORD") || "",
   hostname: "localhost",
   database: "milkyway_api_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
