@@ -9,7 +9,7 @@ defmodule MilkywayApi.CatalogTest do
     alias MilkywayApi.Accounts
     import MilkywayApi.CatalogFixtures
 
-    @invalid_attrs %{status: nil, description: nil, title: nil, location: nil, price: nil}
+    @invalid_attrs %{status: nil, description: nil, title: nil, location: nil, price: nil, active: nil, image: nil}
 
     test "list_products/0 returns all products" do
       product = product_fixture()
@@ -35,6 +35,8 @@ defmodule MilkywayApi.CatalogTest do
         title: "some title",
         location: "some location",
         price: 42,
+        active: true,
+        image: "some image",
         seller_id: seller.id
       }
 
@@ -43,6 +45,8 @@ defmodule MilkywayApi.CatalogTest do
       assert product.description == "some description"
       assert product.title == "some title"
       assert product.location == "some location"
+      assert product.active == true
+      assert product.image == "some image"
       assert product.price == 42
       assert product.seller_id == seller.id
     end
@@ -61,6 +65,8 @@ defmodule MilkywayApi.CatalogTest do
         title: "some title",
         location: "some location",
         price: 42,
+        active: true,
+        image: "some image",
         seller_id: admin.id
       }
 
@@ -70,6 +76,8 @@ defmodule MilkywayApi.CatalogTest do
       assert product.title == "some title"
       assert product.location == "some location"
       assert product.price == 42
+      assert product.active == true
+      assert product.image == "some image"
       assert product.seller_id == admin.id
     end
 
@@ -85,6 +93,8 @@ defmodule MilkywayApi.CatalogTest do
         description: "some updated description",
         title: "some updated title",
         location: "some updated location",
+        active: false,
+        image: "some updated image",
         price: 43
       }
 
@@ -94,6 +104,8 @@ defmodule MilkywayApi.CatalogTest do
       assert product.title == "some updated title"
       assert product.location == "some updated location"
       assert product.price == 43
+      assert product.active == false
+      assert product.image == "some updated image"
     end
 
     test "update_product/2 with invalid data returns error changeset" do

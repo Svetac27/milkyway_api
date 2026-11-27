@@ -37,7 +37,9 @@ defmodule MilkywayApiWeb.ProductAdminTest do
         "description" => "Good condition",
         "price" => 1200,
         "status" => "active",
-        "location" => "Belgrade"
+        "location" => "Belgrade",
+        "active" => true,
+        "image" => "some image"
       })
 
     assert %{"data" => %{"seller_id" => seller_id}} = json_response(conn, 201)
@@ -81,6 +83,8 @@ defmodule MilkywayApiWeb.ProductAdminTest do
         price: 1200,
         status: "active",
         location: "Belgrade",
+        active: true,
+        image: "some image",
         seller_id: seller_id
       })
 

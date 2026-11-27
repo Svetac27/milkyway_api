@@ -34,7 +34,7 @@ defmodule MilkywayApi.Catalog.Product do
   def changeset(product, attrs) do
     product
     |> cast(attrs, [:title, :description, :price, :status, :location, :active, :image])
-    |> validate_required([:title, :description, :price, :status, :location])
+    |> validate_required([:title, :description, :price, :status, :location :active :image])
     |> validate_inclusion(:status, ["active", "reserved", "sold", "hidden"])
   end
 end

@@ -125,7 +125,7 @@ defmodule MilkywayApiWeb.ProductController do
        %Schema{
          type: :object,
          properties: @writable_properties,
-         required: [:title, :description, :price, :status, :location]
+         required: [:title, :description, :price, :status, :location, :active, :image]
        }},
     responses: [
       created: {"Product created", "application/json", @product_response},
@@ -142,7 +142,7 @@ defmodule MilkywayApiWeb.ProductController do
          :ok <- require_seller(user) do
       attrs =
         params
-        |> Map.take(["title", "description", "price", "status", "location"])
+        |> Map.take(["title", "description", "price", "status", "location", "active", "image"])
         |> Map.put("seller_id", user.id)
 
       case Catalog.create_product(attrs) do
@@ -195,7 +195,7 @@ defmodule MilkywayApiWeb.ProductController do
          :ok <- require_seller(user),
          product <- Catalog.get_product!(id),
          :ok <- require_owner(user, product) do
-      attrs = Map.take(params, ["title", "description", "price", "status", "location"])
+      attrs = Map.take(params, ["title", "description", "price", "status", "location", "active", "image"])
 
       case Catalog.update_product(product, attrs) do
         {:ok, %Product{} = product} ->

@@ -228,6 +228,8 @@ defmodule MilkywayApiWeb.BasketControllerTest do
         price: 1200,
         status: "active",
         location: "Belgrade",
+        active: true,
+        image: "some image",
         seller_id: seller_id
       })
 

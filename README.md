@@ -197,7 +197,7 @@ Log in at `POST /api/login` and use the returned token on protected routes.
   curl -X POST http://localhost:4400/api/products \
     -H "content-type: application/json" \
     -H "Authorization: Bearer SELLER_TOKEN" \
-    -d '{"title":"MacBook Air","description":"M2 13-inch","price":1200,"status":"active","location":"Belgrade"}'
+    -d '{"title":"MacBook Air","description":"M2 13-inch","price":1200,"status":"active","location":"Belgrade","active":true,"image":"some"}'
   ```
 
 - Update product (seller owner only)
@@ -249,7 +249,7 @@ curl -X POST http://localhost:4400/api/login \
 curl -X POST http://localhost:4400/api/products \
   -H "content-type: application/json" \
   -H "Authorization: Bearer SELLER_TOKEN" \
-  -d '{"title":"ThinkPad X1","description":"Gen 11","price":1500,"status":"active","location":"Novi Sad"}'
+  -d '{"title":"ThinkPad X1","description":"Gen 11","price":1500,"status":"active","location":"Novi Sad","active":true,"image":"some"}'
 
 # 5) Reserve product as seller-owner (replace PRODUCT_ID)
 curl -X PATCH http://localhost:4400/api/products/PRODUCT_ID \

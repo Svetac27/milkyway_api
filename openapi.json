@@ -598,9 +598,7 @@
                     "x-validate": null
                   }
                 },
-                "required": [
-                  "name"
-                ],
+                "required": ["name"],
                 "type": "object",
                 "x-struct": null,
                 "x-validate": null
@@ -1588,6 +1586,16 @@
                             "x-struct": null,
                             "x-validate": null
                           },
+                          "active": {
+                            "type": "boolean",
+                            "x-struct": null,
+                            "x-validate": null
+                          },
+                          "image": {
+                            "type": "string",
+                            "x-struct": null,
+                            "x-validate": null
+                          },
                           "price": {
                             "description": "Price in cents",
                             "type": "integer",
@@ -1601,12 +1609,7 @@
                           },
                           "status": {
                             "description": "Product status",
-                            "enum": [
-                              "active",
-                              "reserved",
-                              "sold",
-                              "hidden"
-                            ],
+                            "enum": ["active", "reserved", "sold", "hidden"],
                             "type": "string",
                             "x-struct": null,
                             "x-validate": null
@@ -1642,9 +1645,7 @@
           }
         },
         "summary": "List products",
-        "tags": [
-          "Products"
-        ]
+        "tags": ["Products"]
       },
       "post": {
         "callbacks": {},
@@ -1666,6 +1667,16 @@
                     "x-struct": null,
                     "x-validate": null
                   },
+                  "active": {
+                    "type": "boolean",
+                    "x-struct": null,
+                    "x-validate": null
+                  },
+                  "image": {
+                    "type": "string",
+                    "x-struct": null,
+                    "x-validate": null
+                  },
                   "price": {
                     "description": "Price in cents",
                     "type": "integer",
@@ -1674,12 +1685,7 @@
                   },
                   "status": {
                     "description": "Product status",
-                    "enum": [
-                      "active",
-                      "reserved",
-                      "sold",
-                      "hidden"
-                    ],
+                    "enum": ["active", "reserved", "sold", "hidden"],
                     "type": "string",
                     "x-struct": null,
                     "x-validate": null
@@ -1690,13 +1696,7 @@
                     "x-validate": null
                   }
                 },
-                "required": [
-                  "title",
-                  "description",
-                  "price",
-                  "status",
-                  "location"
-                ],
+                "required": ["title", "description", "price", "status", "location", "active", "image"],
                 "type": "object",
                 "x-struct": null,
                 "x-validate": null
@@ -1735,6 +1735,16 @@
                           "x-struct": null,
                           "x-validate": null
                         },
+                        "active": {
+                          "type": "boolean",
+                          "x-struct": null,
+                          "x-validate": null
+                        },
+                        "image": {
+                          "type": "string",
+                          "x-struct": null,
+                          "x-validate": null
+                        },
                         "price": {
                           "description": "Price in cents",
                           "type": "integer",
@@ -1748,12 +1758,7 @@
                         },
                         "status": {
                           "description": "Product status",
-                          "enum": [
-                            "active",
-                            "reserved",
-                            "sold",
-                            "hidden"
-                          ],
+                          "enum": ["active", "reserved", "sold", "hidden"],
                           "type": "string",
                           "x-struct": null,
                           "x-validate": null
@@ -1862,9 +1867,7 @@
           }
         ],
         "summary": "Create product",
-        "tags": [
-          "Products"
-        ]
+        "tags": ["Products"]
       }
     },
     "/api/products/{id}": {
@@ -1953,9 +1956,7 @@
           }
         ],
         "summary": "Delete product",
-        "tags": [
-          "Products"
-        ]
+        "tags": ["Products"]
       },
       "get": {
         "callbacks": {},
@@ -2003,6 +2004,16 @@
                           "x-struct": null,
                           "x-validate": null
                         },
+                        "active": {
+                          "type": "boolean",
+                          "x-struct": null,
+                          "x-validate": null
+                        },
+                        "image": {
+                          "type": "string",
+                          "x-struct": null,
+                          "x-validate": null
+                        },
                         "price": {
                           "description": "Price in cents",
                           "type": "integer",
@@ -2016,12 +2027,7 @@
                         },
                         "status": {
                           "description": "Product status",
-                          "enum": [
-                            "active",
-                            "reserved",
-                            "sold",
-                            "hidden"
-                          ],
+                          "enum": ["active", "reserved", "sold", "hidden"],
                           "type": "string",
                           "x-struct": null,
                           "x-validate": null
@@ -2072,9 +2078,7 @@
           }
         },
         "summary": "Get product details",
-        "tags": [
-          "Products"
-        ]
+        "tags": ["Products"]
       },
       "patch": {
         "callbacks": {},
@@ -2108,6 +2112,16 @@
                     "x-struct": null,
                     "x-validate": null
                   },
+                  "active": {
+                    "type": "boolean",
+                    "x-struct": null,
+                    "x-validate": null
+                  },
+                  "image": {
+                    "type": "string",
+                    "x-struct": null,
+                    "x-validate": null
+                  },
                   "price": {
                     "description": "Price in cents",
                     "type": "integer",
@@ -2116,12 +2130,7 @@
                   },
                   "status": {
                     "description": "Product status",
-                    "enum": [
-                      "active",
-                      "reserved",
-                      "sold",
-                      "hidden"
-                    ],
+                    "enum": ["active", "reserved", "sold", "hidden"],
                     "type": "string",
                     "x-struct": null,
                     "x-validate": null
@@ -2170,6 +2179,16 @@
                           "x-struct": null,
                           "x-validate": null
                         },
+                        "active": {
+                          "type": "boolean",
+                          "x-struct": null,
+                          "x-validate": null
+                        },
+                        "image": {
+                          "type": "string",
+                          "x-struct": null,
+                          "x-validate": null
+                        },
                         "price": {
                           "description": "Price in cents",
                           "type": "integer",
@@ -2183,12 +2202,7 @@
                         },
                         "status": {
                           "description": "Product status",
-                          "enum": [
-                            "active",
-                            "reserved",
-                            "sold",
-                            "hidden"
-                          ],
+                          "enum": ["active", "reserved", "sold", "hidden"],
                           "type": "string",
                           "x-struct": null,
                           "x-validate": null
@@ -2316,9 +2330,7 @@
           }
         ],
         "summary": "Update product",
-        "tags": [
-          "Products"
-        ]
+        "tags": ["Products"]
       }
     },
     "/api/products/{id}/buyers": {
@@ -2457,9 +2469,7 @@
           }
         ],
         "summary": "List product buyers",
-        "tags": [
-          "Products"
-        ]
+        "tags": ["Products"]
       }
     }
   },

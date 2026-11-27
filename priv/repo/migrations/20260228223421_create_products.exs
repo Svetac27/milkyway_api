@@ -8,6 +8,8 @@ defmodule MilkywayApi.Repo.Migrations.CreateProducts do
       add :price, :integer
       add :status, :string
       add :location, :string
+      add :active, :boolean, default: true
+      add :image, :string
       add :seller_id, references(:users, on_delete: :delete_all), null: false
 
       timestamps(type: :utc_datetime)

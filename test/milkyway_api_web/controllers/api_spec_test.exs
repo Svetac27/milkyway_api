@@ -93,7 +93,7 @@ defmodule MilkywayApiWeb.ApiSpecTest do
              "application/json",
              "schema",
              "required"
-           ]) == ["title", "description", "price", "status", "location"]
+           ]) == ["title", "description", "price", "status", "location", "active", "image"]
 
     # Product properties validation
     for method <- ["post", "patch"] do
