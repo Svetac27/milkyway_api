@@ -114,6 +114,8 @@ defmodule MilkywayApiWeb.ApiSpecTest do
       assert %{"type" => "integer"} = properties["price"]
       assert %{"type" => "string"} = properties["status"]
       assert %{"type" => "string"} = properties["location"]
+      assert %{"type" => "boolean"} = properties["active"]
+      assert %{"type" => "string", "nullable" => true} = properties["image"]
     end
 
     # Product GET response schema
@@ -149,6 +151,23 @@ defmodule MilkywayApiWeb.ApiSpecTest do
                "items",
                "properties",
                "title"
+             ])
+
+    assert %{"type" => "boolean"} =
+             get_in(spec, [
+               "paths",
+               "/api/products",
+               "get",
+               "responses",
+               "200",
+               "content",
+               "application/json",
+               "schema",
+               "properties",
+               "data",
+               "items",
+               "properties",
+               "active"
              ])
 
     assert %{"type" => "string", "nullable" => true} =

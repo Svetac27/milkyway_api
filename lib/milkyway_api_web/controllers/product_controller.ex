@@ -19,19 +19,29 @@ defmodule MilkywayApiWeb.ProductController do
     },
     location: %Schema{type: :string},
     seller_id: %Schema{type: :integer},
+    active: %Schema{type: :boolean, description: "Whether product is active"},
+    image: %Schema{type: :string, nullable: true, description: "Product image URL"},
     inserted_at: %Schema{type: :string, format: :"date-time"},
     updated_at: %Schema{type: :string, format: :"date-time"}
   }
 
-  @product_schema %Schema{type: :object, properties: @product_properties}
-  @product_response %Schema{type: :object, properties: %{data: @product_schema}}
+  @product_schema %Schema{
+    type: :object,
+    properties: @product_properties
+  }
+
+  @product_response %Schema{
+    type: :object,
+    properties: %{data: @product_schema}
+  }
+
   @products_response %Schema{
     type: :object,
     properties: %{data: %Schema{type: :array, items: @product_schema}}
   }
 
-  @writable_fields [:title, :description, :price, :status, :location]
-  @writable_properties @product_properties |> Map.take(@writable_fields)
+  @writable_fields [:title, :description, :price, :status, :location, :active, :image]
+  @writable_properties Map.take(@product_properties, @writable_fields)
 
   @user_schema %Schema{
     type: :object,
@@ -49,14 +59,21 @@ defmodule MilkywayApiWeb.ProductController do
     properties: %{data: %Schema{type: :array, items: @user_schema}}
   }
 
-  @error_schema %Schema{type: :object, properties: %{error: %Schema{type: :string}}}
+  @error_schema %Schema{
+    type: :object,
+    properties: %{error: %Schema{type: :string}}
+  }
+
   @validation_schema %Schema{
     type: :object,
     properties: %{
       error: %Schema{type: :string},
       details: %Schema{
         type: :object,
-        additionalProperties: %Schema{type: :array, items: %Schema{type: :string}}
+        additionalProperties: %Schema{
+          type: :array,
+          items: %Schema{type: :string}
+        }
       }
     }
   }
@@ -77,7 +94,6 @@ defmodule MilkywayApiWeb.ProductController do
     ]
   )
 
-  # Public: list
   def index(conn, _params) do
     products = Catalog.list_products()
     json(conn, %{data: products})
@@ -94,7 +110,6 @@ defmodule MilkywayApiWeb.ProductController do
     ]
   )
 
-  # Public: show
   def show(conn, %{"id" => id}) do
     product = Catalog.get_product!(id)
     json(conn, %{data: product})
@@ -102,7 +117,7 @@ defmodule MilkywayApiWeb.ProductController do
 
   operation(:create,
     summary: "Create product",
-    description: "Create a new product. Requires seller role.",
+    description: "Create a new product. Requires seller or admin role.",
     tags: ["Products"],
     security: @security,
     request_body:
@@ -120,7 +135,6 @@ defmodule MilkywayApiWeb.ProductController do
     ]
   )
 
-  # Seller-only: create
   def create(conn, params) do
     user = conn.assigns[:current_user]
 
@@ -140,17 +154,22 @@ defmodule MilkywayApiWeb.ProductController do
         {:error, changeset} ->
           conn
           |> put_status(:unprocessable_entity)
-          |> json(%{error: "validation_failed", details: changeset_errors(changeset)})
+          |> json(%{
+            error: "validation_failed",
+            details: changeset_errors(changeset)
+          })
       end
     else
       {:error, status, message} ->
-        conn |> put_status(status) |> json(%{error: message})
+        conn
+        |> put_status(status)
+        |> json(%{error: message})
     end
   end
 
   operation(:update,
     summary: "Update product",
-    description: "Update a product. Only the product owner or admin can update.",
+    description: "Update a product. Requires seller or admin role and ownership, unless admin.",
     tags: ["Products"],
     security: @security,
     parameters: @id_param,
@@ -169,7 +188,6 @@ defmodule MilkywayApiWeb.ProductController do
     ]
   )
 
-  # Seller-only + ownership: update
   def update(conn, %{"id" => id} = params) do
     user = conn.assigns[:current_user]
 
@@ -186,17 +204,22 @@ defmodule MilkywayApiWeb.ProductController do
         {:error, changeset} ->
           conn
           |> put_status(:unprocessable_entity)
-          |> json(%{error: "validation_failed", details: changeset_errors(changeset)})
+          |> json(%{
+            error: "validation_failed",
+            details: changeset_errors(changeset)
+          })
       end
     else
       {:error, status, message} ->
-        conn |> put_status(status) |> json(%{error: message})
+        conn
+        |> put_status(status)
+        |> json(%{error: message})
     end
   end
 
   operation(:delete,
     summary: "Delete product",
-    description: "Delete a product. Only the product owner or admin can delete.",
+    description: "Delete a product. Requires seller or admin role and ownership, unless admin.",
     tags: ["Products"],
     security: @security,
     parameters: @id_param,
@@ -208,7 +231,6 @@ defmodule MilkywayApiWeb.ProductController do
     ]
   )
 
-  # Seller-only + ownership: delete
   def delete(conn, %{"id" => id}) do
     user = conn.assigns[:current_user]
 
@@ -220,13 +242,16 @@ defmodule MilkywayApiWeb.ProductController do
       send_resp(conn, :no_content, "")
     else
       {:error, status, message} ->
-        conn |> put_status(status) |> json(%{error: message})
+        conn
+        |> put_status(status)
+        |> json(%{error: message})
     end
   end
 
   operation(:buyers,
     summary: "List product buyers",
-    description: "Get list of users who have this product in their basket. Only the product owner or admin can view.",
+    description:
+      "List users who have this product in their basket. Requires seller or admin role and ownership, unless admin.",
     tags: ["Products"],
     security: @security,
     parameters: @id_param,
@@ -238,7 +263,6 @@ defmodule MilkywayApiWeb.ProductController do
     ]
   )
 
-  # Seller-only + ownership: list buyers who selected product in basket
   def buyers(conn, %{"id" => id}) do
     user = conn.assigns[:current_user]
 
@@ -251,11 +275,13 @@ defmodule MilkywayApiWeb.ProductController do
       json(conn, %{data: Enum.map(buyers, &serialize_user/1)})
     else
       {:error, status, message} ->
-        conn |> put_status(status) |> json(%{error: message})
+        conn
+        |> put_status(status)
+        |> json(%{error: message})
     end
   end
 
-  # ---- helpers ----
+  # Helpers
 
   defp require_auth(nil), do: {:error, :unauthorized, "unauthorized"}
   defp require_auth(user), do: {:ok, user}
@@ -266,7 +292,11 @@ defmodule MilkywayApiWeb.ProductController do
   defp require_owner(%{role: "admin"}, %Product{}), do: :ok
 
   defp require_owner(user, %Product{seller_id: seller_id}) do
-    if user.id == seller_id, do: :ok, else: {:error, :forbidden, "not_owner"}
+    if user.id == seller_id do
+      :ok
+    else
+      {:error, :forbidden, "not_owner"}
+    end
   end
 
   defp serialize_user(user) do
@@ -281,8 +311,8 @@ defmodule MilkywayApiWeb.ProductController do
 
   defp changeset_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-      Enum.reduce(opts, msg, fn {k, v}, acc ->
-        String.replace(acc, "%{#{k}}", to_string(v))
+      Enum.reduce(opts, msg, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
   end

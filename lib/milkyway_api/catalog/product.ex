@@ -11,6 +11,8 @@ defmodule MilkywayApi.Catalog.Product do
              :status,
              :location,
              :seller_id,
+             :active,
+             :image,
              :inserted_at,
              :updated_at
            ]}
@@ -22,6 +24,8 @@ defmodule MilkywayApi.Catalog.Product do
     field :status, :string, default: "active"
     field :location, :string
     field :seller_id, :id
+    field :active, :boolean, default: true
+    field :image, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -29,7 +33,7 @@ defmodule MilkywayApi.Catalog.Product do
   @doc false
   def changeset(product, attrs) do
     product
-    |> cast(attrs, [:title, :description, :price, :status, :location])
+    |> cast(attrs, [:title, :description, :price, :status, :location, :active, :image])
     |> validate_required([:title, :description, :price, :status, :location])
     |> validate_inclusion(:status, ["active", "reserved", "sold", "hidden"])
   end
