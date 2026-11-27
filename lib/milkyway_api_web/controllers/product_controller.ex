@@ -18,9 +18,9 @@ defmodule MilkywayApiWeb.ProductController do
       description: "Product status"
     },
     location: %Schema{type: :string},
-    seller_id: %Schema{type: :integer},
     active: %Schema{type: :boolean, description: "Whether product is active"},
     image: %Schema{type: :string, nullable: true, description: "Product image URL"},
+    seller_id: %Schema{type: :integer},
     inserted_at: %Schema{type: :string, format: :"date-time"},
     updated_at: %Schema{type: :string, format: :"date-time"}
   }

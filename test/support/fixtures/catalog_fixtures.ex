@@ -23,6 +23,8 @@ defmodule MilkywayApi.CatalogFixtures do
         price: 42,
         status: "active",
         title: "some title",
+        active: true,
+        image: "some image",
         seller_id: seller.id
       })
       |> MilkywayApi.Catalog.create_product()
